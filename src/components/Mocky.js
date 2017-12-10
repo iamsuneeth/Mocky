@@ -10,26 +10,26 @@ class Mocky extends React.Component {
     
     sendHAR(templateId){
         return new Promise((resolve, reject) => {
-            chrome.devtools.network.getHAR(function(result) {
-                let filtredData = filterData(result);
-                console.log(filtredData);
-                if (!filtredData.length) {
-                  reject("nothing");
-                }else{
-                    let payload = {
-                        id:templateId,
-                        host:constants.url,
-                        har:JSON.stringify(filtredData)
-                    }
-                    fetch('https://mum00bja:8080/', {
-                        method: 'post',
-                        body: payload
-                      }).then(function(response) {
-                        resolve(response.json());
-                      });
-                }
+            // chrome.devtools.network.getHAR(function(result) {
+            //     let filtredData = filterData(result);
+            //     console.log(filtredData);
+            //     if (!filtredData.length) {
+            //       reject("nothing");
+            //     }else{
+            //         let payload = {
+            //             id:templateId,
+            //             host:constants.url,
+            //             har:JSON.stringify(filtredData)
+            //         }
+            //         fetch('https://mum00bja:8080/', {
+            //             method: 'post',
+            //             body: payload
+            //           }).then(function(response) {
+            //             resolve(response.json());
+            //           });
+            //     }
               
-              });
+            //   });
         })
         
     }
@@ -41,29 +41,29 @@ class Mocky extends React.Component {
         let url = document.getElementById('url').value;
         let ruleId = document.getElementById('ruleId').value;
         event.target.reset();
-        chrome.runtime.sendMessage({
-            command: "saveRule",
-            tabId: chrome.devtools.tabId,
-            args:{
-                host,
-                url,
-                ruleId
-            }
-        },function(res){
-            console.log(res);
-        })
+        // chrome.runtime.sendMessage({
+        //     command: "saveRule",
+        //     tabId: chrome.devtools.tabId,
+        //     args:{
+        //         host,
+        //         url,
+        //         ruleId
+        //     }
+        // },function(res){
+        //     console.log(res);
+        // })
     }
 
     componentDidMount() {
-        chrome.runtime.sendMessage({
-            command: "getURL",
-            tabId: chrome.devtools.tabId,
-            args: {
-            }
-        }, function (res) {
-            constants.url = res;
-        }
-        )
+        // chrome.runtime.sendMessage({
+        //     command: "getURL",
+        //     tabId: chrome.devtools.tabId,
+        //     args: {
+        //     }
+        // }, function (res) {
+        //     constants.url = res;
+        // }
+        // )
     }
 
 
@@ -74,7 +74,6 @@ class Mocky extends React.Component {
             <div className="mocky-app">
                 <MockAndRecord saveHAR={this.sendHAR}/>
                 <MockConfig />
-                hellow react with webpack
             </div>
         )
     }

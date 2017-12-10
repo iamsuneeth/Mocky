@@ -2,8 +2,8 @@ import React from 'react';
 
 
 class MockAndRecord extends React.Component{
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             template:'',
             harSendCount:0,
@@ -23,8 +23,9 @@ class MockAndRecord extends React.Component{
         this.setState({
             error:''
         });
+        console.log(this.props);
         this.props.saveHAR(
-            this.state.template
+            //this.state.template
         ).then(function(res){
             this.setState({
                 harSendCount:++this.state.harSendCount

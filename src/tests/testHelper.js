@@ -5,6 +5,6 @@ import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-export function renderComponent(Component){
-    return shallow(<Component />);
+export function renderComponent(Component,props={}){
+    return shallow(<Component {...props} />);
 }

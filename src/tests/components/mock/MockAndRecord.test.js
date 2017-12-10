@@ -4,7 +4,14 @@ import {renderComponent} from '../../testHelper';
 
 let component = null;
 beforeAll(() => {
-     component = renderComponent(MockAndRecord);
+     let props = {
+         saveHAR:() => (
+             new Promise((resolve,reject) => (
+                 resolve("completed")
+             ))
+         )
+     }
+     component = renderComponent(MockAndRecord,props);
 });
 
 it('renders 2 children', () => {

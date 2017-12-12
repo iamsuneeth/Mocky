@@ -16,7 +16,7 @@ class Mocky extends React.Component {
         super();
         this.state = {
             configPresent:false,
-            host:'2232',
+            host:'',
             port:'',
             mockUrl:'',
             sendUrl:'',

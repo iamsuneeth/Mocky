@@ -9,6 +9,7 @@
         "webRequest",
         "webRequestBlocking",
         "storage",
+        "tabs",
         "*://*/*"
       ],
       "devtools_page": "devtools.html",

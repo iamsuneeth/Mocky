@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 
 class MockAndRecord extends React.Component{
     constructor(props) {
@@ -25,7 +25,7 @@ class MockAndRecord extends React.Component{
         });
         console.log(this.props);
         this.props.saveHAR(
-            //this.state.template
+            this.state.template
         ).then(function(res){
             this.setState({
                 harSendCount:++this.state.harSendCount
@@ -49,5 +49,10 @@ class MockAndRecord extends React.Component{
     }
     
 }
+
+MockAndRecord.propTypes = {
+    saveHAR: PropTypes.func
+}
+
 
 export default MockAndRecord;

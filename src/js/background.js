@@ -1,25 +1,20 @@
-// chrome.webRequest.onCompleted.addListener(
-//     function(details) {
-//       console.log(details);
-//     },
-//     {urls: ["<all_urls>"],types:["xmlhttprequest"]});
-
-
-//     function interceptRequest(request) {
-//         console.log(request);
-//         return { redirectUrl: 'https://stackoverflow.com/digx/' }
-//     }
-//     chrome.webRequest.onBeforeRequest.addListener(interceptRequest, { urls: ['*://stackoverflow.com/*'] }, ['blocking']);
-
 chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
-    
-        if (request.command === 'storeInterval'){
-          chrome.storage.local.set({interval:request.args});
-        }
-        if (request.command === 'readInterval'){
-          chrome.storage.local.get('interval', function(result){
-            sendResponse(result.interval);
-          });
+        if(request.command === 'loadBaseConfig'){
+          chrome.tabs.get(request.tabId,function(tab){
+            const url = new URL(tab.url);
+            chrome.storage.local.get(url.hostname, function(result){
+              if(result && result.hostname){
+                sendResponse(result);
+              }else{
+                sendResponse(url.hostname);
+              }   
+     
+            });
+
+          })
+        }else if(request.command === 'updateConfig'){
+          let config = {[request.args.config.host]:request.args.config};
+          chrome.storage.local.set(config);
         }
         if(request.command ==='saveRule') {
           chrome.storage.local.get(request.args.host, function(result){

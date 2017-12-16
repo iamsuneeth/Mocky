@@ -1,18 +1,18 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     entry: {
         background:"./src/js/background.js",
         devtools:"./src/js/devtools.js",
-        panel:"./src/js/panel.js",
-        main:"./src/styles/main.scss"
+        panel:"./src/js/panel.js"
     },
     output: {
         filename: "[name].js",
         path: path.resolve(__dirname,"dist")
     },
+    devtool:'sourcemap',
     module: {
         loaders: [
             {
@@ -20,16 +20,40 @@ module.exports = {
                 include : path.resolve(__dirname,"src/js"),
                 loader: 'babel-loader'
             },
-            { // regular css files
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                  use: 'css-loader?importLoaders=1',
-                }),
+            {
+                test:/\.css$/,
+                exclude: /node_modules/,
+                use: ExtractTextPlugin.extract({
+                    fallback:'style-loader',
+                    use:[
+                        {
+                            loader:'css-loader',
+                            query: {
+                                modules:true,
+                                localIdentName: '[name]__[local]__[hash:base64:5]'
+                            }
+                        }
+                    ]
+                })
             },
-            { //scss loader for webpack
+            { 
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
-            }
+                exclude:/node_modules/,
+                use: ExtractTextPlugin.extract({
+                    fallback:'style-loader',
+                    use:[
+                        {
+                            loader:'css-loader',
+                            query:{
+                                modules:true,
+                                localIdentName: '[name]__[local]__[hash:base64:5]'
+                            }
+                        },
+                        'sass-loader'
+                    ]
+                })
+            },
+            
         ]
     },
     devServer: {
@@ -39,9 +63,7 @@ module.exports = {
         hot:true
     },
     plugins:[
-        new ExtractTextPlugin({
-            filename:'main.css'
-        }),
+        new ExtractTextPlugin("style.css"),
         new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin()
     ]

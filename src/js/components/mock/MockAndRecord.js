@@ -1,21 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Style from './mockAndRecord.scss';
+import Page from '../common/Page';
+import ButtonContainer from '../common/ButtonContainer';
+import Button from '../common/Button';
+import Row from '../common/Row';
+import List from '../common/List';
 
 class MockAndRecord extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
             template:'',
+            url:'',
             harSendCount:0,
             error:''
         };
         this.onTemplateChange = this.onTemplateChange.bind(this);
+        this.onUrlChange = this.onUrlChange.bind(this);
         this.saveHAR = this.saveHAR.bind(this);
     }
 
     onTemplateChange (event){
         this.setState({
             template: event.target.value
+        })
+    }
+
+    onUrlChange (event){
+        this.setState({
+            url: event.target.value
         })
     }
 
@@ -36,14 +50,50 @@ class MockAndRecord extends React.Component{
         }.bind(this))
     }
     render(){
+        let headerPropsMock={
+            header:'Mock',
+            backgroundColor:'rgb(46, 120, 206)',
+            color:"#fff"
+        }
+        let headerPropsList={
+            header:'Template List',
+            backgroundColor:'rgb(76, 150, 101)',
+            color:'#fff'
+        }
+
+        let dummyList = [
+            {
+                header:'template1',
+                content:'url1/44/123'
+            },
+            {
+                header:'template1',
+                content:'url1/44/123'
+            },
+            {
+                header:'template1',
+                content:'url1/44/123'
+            }
+        ]
         return (
-            <div className="mock-record">
-                <p><label htmlFor="template">Template: </label><input id="template" type="text" onChange={this.onTemplateChange}/></p>
-                <p>
-                    <button className="saveHar"onClick={this.saveHAR}>Save HAR</button>
-                    <button className="startMocking" onClick={this.props.startMock}>Start Mocking</button>
-                    <span>{this.state.error}</span>
-                </p>
+            <div className={Style.mockRecord}>
+                <div className={Style.mockParent}>
+                    <div className={Style.mockChild}>
+                        <Page headerProps={headerPropsList}>
+                        <List items={dummyList}/>
+                        </Page>
+                    </div>
+                    <div className={Style.mockChild}>
+                        <Page headerProps={headerPropsMock}>
+                            <Row noLabel={false} placeholder={'Template Name'} onChangeHandler={this.onTemplateChange}/>
+                            <Row noLabel={false} placeholder={'Url prefix to mock'} onChangeHandler={this.onSendUrlChange}/>
+                            <ButtonContainer align="flex-end">
+                                <Button text="Save HAR" clickHandler={this.saveHAR}/>
+                                {/* <Button text="Start Mocking" clickHandler={this.props.startMock}/> */}
+                            </ButtonContainer>
+                        </Page>
+                    </div>
+                </div>
             </div>
         )
     }

@@ -1,0 +1,30 @@
+$mainColor:rgb(76, 150, 101);
+
+.mockyApp{
+    display: flex;
+    justify-content: space-around;
+    max-width: 1080px;
+    margin: auto;
+}
+
+input[type='text']{
+    min-width: 240px;
+    padding:5px;
+    height:30px;
+}
+
+button {
+    min-width: 100px;
+    min-height: 30px;
+    background-color: #fff;
+    color: #ccc;
+    border-radius: 1px;
+    border: 1px solid #ccc;
+    margin:2px;
+}
+
+button:hover {
+    border-color: $mainColor;
+    color:$mainColor;
+    cursor: pointer;
+}

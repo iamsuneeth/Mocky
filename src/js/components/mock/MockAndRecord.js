@@ -14,11 +14,20 @@ class MockAndRecord extends React.Component{
             template:'',
             url:'',
             harSendCount:0,
-            error:''
+            error:'',
+            templates:[]
         };
         this.onTemplateChange = this.onTemplateChange.bind(this);
         this.onUrlChange = this.onUrlChange.bind(this);
         this.saveHAR = this.saveHAR.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.fetchTemplateList().then((res) => {
+            this.setState({
+                templates:res.templates
+            });
+        })
     }
 
     onTemplateChange (event){
@@ -64,15 +73,18 @@ class MockAndRecord extends React.Component{
         let dummyList = [
             {
                 header:'template1',
-                content:'url1/44/123'
+                content:'url1/44/123',
+                label:'Mocked Url'
             },
             {
                 header:'template1',
-                content:'url1/44/123'
+                content:'url1/44/123',
+                label:'Mocked Url'
             },
             {
                 header:'template1',
-                content:'url1/44/123'
+                content:'url1/44/123',
+                label:'Mocked Url'
             }
         ]
         return (
@@ -80,16 +92,15 @@ class MockAndRecord extends React.Component{
                 <div className={Style.mockParent}>
                     <div className={Style.mockChild}>
                         <Page headerProps={headerPropsList}>
-                        <List items={dummyList}/>
+                        <List items={this.state.templates} mockHandler={this.props.startMock}/>
                         </Page>
                     </div>
                     <div className={Style.mockChild}>
                         <Page headerProps={headerPropsMock}>
                             <Row noLabel={false} placeholder={'Template Name'} onChangeHandler={this.onTemplateChange}/>
                             <Row noLabel={false} placeholder={'Url prefix to mock'} onChangeHandler={this.onSendUrlChange}/>
-                            <ButtonContainer align="flex-end">
+                            <ButtonContainer align="center">
                                 <Button text="Save HAR" clickHandler={this.saveHAR}/>
-                                {/* <Button text="Start Mocking" clickHandler={this.props.startMock}/> */}
                             </ButtonContainer>
                         </Page>
                     </div>

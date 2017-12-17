@@ -1,20 +1,28 @@
 import React from 'react';
+import Style from './List.scss';
+import ButtonContainer from '../common/ButtonContainer';
+import Button from '../common/Button';
+
 
 const List = props => (
-    <ul className="list">
+    <ul className={Style.list}>
         {props.items.map((item,index) => (
-            <ListItem key={index} item={item} />
+            <ListItem key={index} item={item} mockHandler={props.mockHandler}/>
         ))}
     </ul>
 );
 
 
 const ListItem = props => (
-    <li className={Style.listItem} key={props.key}>
-        <div className={card}>
-            <div className="header">{props.item.header}</div>
-            <div className="body">{props.item.content}</div>
-            <div className="footer">{props.item.footer}</div>
+    <li className={Style.listItem}>
+        <div className={Style.card}>
+            <div className={Style.header}><h3>{props.item.templateId}</h3></div>
+            <div className={Style.body}><span className={Style.label}>{props.item.label}</span><span className={Style.content}>{props.item.content}</span></div>
+            <div className={Style.footer}>{props.item.footer}</div>
+            <hr/>
+            <ButtonContainer align="center">
+                <Button text="Start Mocking" clickHandler={()=>props.mockHandler(props.item.templateId)}/>
+            </ButtonContainer>
         </div>
     </li>
 )

@@ -41,8 +41,9 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
           chrome.tabs.get(request.tabId,function(tab){
             const url = new URL(tab.url);
             chrome.storage.local.get(url.hostname, function(result){
-              if(result && result.hostname){
-                sendResponse(result);
+              console.log(result && result[url.hostname] && result[url.hostname].config);
+              if(result && result[url.hostname] && result[url.hostname].config){
+                sendResponse(result[url.hostname].config);
               }else{
                 sendResponse(url.hostname);
               }   
@@ -51,11 +52,11 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
 
           })
         }else if(request.command === 'updateConfig'){
-          let config = {[request.args.config.host]:request.args.config};
+          let config = {[request.args.config.host]:{'config':request.args.config}};
           chrome.storage.local.set(config);
         }else if(request.command === 'getTemplates'){
           chrome.storage.local.get(request.args.host, function(result){
-            let templates = result[request.args.host]
+            let templates = result[request.args.host].templates;
             if(templates){
               sendResponse(templates);
             }else{
@@ -64,7 +65,7 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
           });
         }else if(request.command ==='saveTemplate') {
           chrome.storage.local.get(request.args.host, function(result){
-            let templates = result[request.args.host]
+            let templates = result[request.args.host].templates;
             let duplicate = false;
             if(templates){
               for(let i=0;i<templates.length;i++){
@@ -78,11 +79,12 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
                 sendResponse("Duplicate");
                 return;
               }
-              result[request.args.host].push(request.args);
+              
+              templates.push(request.args);
+              result[request.args.host].templates=templates;
               chrome.storage.local.set(result);
             }else{
-              let templates = {};
-              templates[request.args.host] = [request.args];
+              templates[request.args.host].templates = [request.args];
               chrome.storage.local.set(templates);
             }
           });

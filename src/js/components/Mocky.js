@@ -18,6 +18,11 @@ class Mocky extends React.Component {
       active:false
     };
     this.updateConfig = this.updateConfig.bind(this);
+    this.sendHAR = this.sendHAR.bind(this);
+    this.fetchTemplateList = this.fetchTemplateList.bind(this);
+    this.startMock = this.startMock.bind(this);
+    this.startMock = this.startMock.bind(this);
+    this.startMock = this.startMock.bind(this);
   }
 
   componentDidMount() {
@@ -44,25 +49,44 @@ class Mocky extends React.Component {
     } );
   }
 
-  sendHAR(templateId) {
+  sendHAR(templateId,url) {
+    let host = this.state.host;
     return new Promise((resolve, reject) => {
-      chrome.devtools.network.getHAR((error, result) => {
-        const filtredData = filterData(result);
-        console.log(filtredData);
-        if (!filtredData.length) {
-          reject(error);
+      chrome.devtools.network.getHAR((result) => {
+        if (!result) {
+          reject('error');
         } else {
           const payload = {
             id: templateId,
-            host: constants.url,
-            har: JSON.stringify(filtredData),
+            host,
+            har: JSON.stringify(result.entries),
           };
           fetch(this.state.sendUrl, {
             method: 'post',
             body: payload,
           }).then((response) => {
-            resolve(response.json());
-          });
+            let jsonResponse = response.json();
+            if(!response.status===201){
+              reject('error');
+            }
+            return response.json();
+          }).then((response) => {
+            chrome.runtime.sendMessage({
+              command: 'saveTemplate',
+              tabId: chrome.devtools.inspectedWindow.tabId,
+              args: {
+                host,
+                templateId,
+                url,
+              },
+            }, (res) => {
+              console.log(res);
+              resolve(res);
+            });
+          }).catch((error) => {
+            console.log(error);
+            reject(error);
+          })
         }
       });
     });
@@ -148,7 +172,10 @@ class Mocky extends React.Component {
           host:this.state.host
         }
       },function(res){
-        resolve(res);
+        if(res)
+          resolve(res);
+        else
+          reject(res);
       })
     }); 
   }
@@ -158,8 +185,9 @@ class Mocky extends React.Component {
     if (this.state.host) {
       return (
         <div className={style.mockyApp}>
-                { this.state.configPresent && <MockAndRecord saveHAR={this.sendHAR}  startMock={this.startMock}/>}
+                { this.state.configPresent && <MockAndRecord saveHAR={this.sendHAR} startMock={this.startMock} fetchTemplateList={this.fetchTemplateList}/>}
                 { !this.state.configPresent && <MockConfig saveMockConfig={this.updateConfig}/>}
+                { !this.state.configPresent && <Button text={'Edit Config'} clickHandler={()=> this.setState({ configPresent:false})}/>}
                 <Modal header={'Ongoing Mock'} show={this.state.active}>
                     <div className={style.mockStatus}>
                       <div className={style.mockControl}>
@@ -180,16 +208,6 @@ class Mocky extends React.Component {
     );
     }
   }
-}
-
-
-function filterData(data) {
-  const filtered = data.entries.filter((element) => {
-    const contentType = element.response.headers.filter(element => element.name === 'content-type');
-    return contentType.value === 'application/json';
-  });
-  console.log(filtered);
-  return filtered;
 }
 
 export default Mocky;

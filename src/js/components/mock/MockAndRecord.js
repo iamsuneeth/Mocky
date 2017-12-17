@@ -15,7 +15,8 @@ class MockAndRecord extends React.Component{
             url:'',
             harSendCount:0,
             error:'',
-            templates:[]
+            templates:[],
+            templatesLoaded:false
         };
         this.onTemplateChange = this.onTemplateChange.bind(this);
         this.onUrlChange = this.onUrlChange.bind(this);
@@ -25,7 +26,8 @@ class MockAndRecord extends React.Component{
     componentDidMount(){
         this.props.fetchTemplateList().then((res) => {
             this.setState({
-                templates:res.templates
+                templates:res,
+                templatesLoaded:true
             });
         })
     }
@@ -48,7 +50,8 @@ class MockAndRecord extends React.Component{
         });
         console.log(this.props);
         this.props.saveHAR(
-            this.state.template
+            this.state.template,
+            this.state.url
         ).then(function(res){
             this.setState({
                 harSendCount:++this.state.harSendCount
@@ -69,30 +72,12 @@ class MockAndRecord extends React.Component{
             backgroundColor:'rgb(76, 150, 101)',
             color:'#fff'
         }
-
-        let dummyList = [
-            {
-                header:'template1',
-                content:'url1/44/123',
-                label:'Mocked Url'
-            },
-            {
-                header:'template1',
-                content:'url1/44/123',
-                label:'Mocked Url'
-            },
-            {
-                header:'template1',
-                content:'url1/44/123',
-                label:'Mocked Url'
-            }
-        ]
         return (
             <div className={Style.mockRecord}>
                 <div className={Style.mockParent}>
                     <div className={Style.mockChild}>
                         <Page headerProps={headerPropsList}>
-                        <List items={this.state.templates} mockHandler={this.props.startMock}/>
+                        { this.state.templatesLoaded && <List items={this.state.templates} mockHandler={this.props.startMock}/>}
                         </Page>
                     </div>
                     <div className={Style.mockChild}>

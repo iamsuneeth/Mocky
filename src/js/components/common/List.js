@@ -4,13 +4,16 @@ import ButtonContainer from '../common/ButtonContainer';
 import Button from '../common/Button';
 
 
-const List = props => (
+const List = props => {
+    console.log(props.items);
+    return (
     <ul className={Style.list}>
-        {props.items.map((item,index) => (
+        {props.items.length>0 && props.items.map((item,index) => (
             <ListItem key={index} item={item} mockHandler={props.mockHandler}/>
         ))}
     </ul>
-);
+    )
+};
 
 
 const ListItem = props => (

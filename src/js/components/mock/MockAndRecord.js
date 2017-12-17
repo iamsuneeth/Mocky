@@ -14,22 +14,11 @@ class MockAndRecord extends React.Component{
             template:'',
             url:'',
             harSendCount:0,
-            error:'',
-            templates:[],
-            templatesLoaded:false
+            error:''
         };
         this.onTemplateChange = this.onTemplateChange.bind(this);
         this.onUrlChange = this.onUrlChange.bind(this);
         this.saveHAR = this.saveHAR.bind(this);
-    }
-
-    componentDidMount(){
-        this.props.fetchTemplateList().then((res) => {
-            this.setState({
-                templates:res,
-                templatesLoaded:true
-            });
-        })
     }
 
     onTemplateChange (event){
@@ -56,6 +45,7 @@ class MockAndRecord extends React.Component{
             this.setState({
                 harSendCount:++this.state.harSendCount
             });
+
         }.bind(this)
         ).catch(function(res){
             this.setState({error:res});
@@ -77,7 +67,7 @@ class MockAndRecord extends React.Component{
                 <div className={Style.mockParent}>
                     <div className={Style.mockChild}>
                         <Page headerProps={headerPropsList}>
-                        { this.state.templatesLoaded && <List items={this.state.templates} mockHandler={this.props.startMock}/>}
+                        <List items={this.props.templates} mockHandler={this.props.startMock}/>
                         </Page>
                     </div>
                     <div className={Style.mockChild}>

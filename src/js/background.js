@@ -84,8 +84,9 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
               result[request.args.host].templates=templates;
               chrome.storage.local.set(result);
             }else{
-              templates[request.args.host].templates = [request.args];
-              chrome.storage.local.set(templates);
+              result[request.args.host].templates = [request.args];
+              chrome.storage.local.set(result);
+              sendResponse('saved');
             }
           });
         }else if(request.command === 'startMock'){

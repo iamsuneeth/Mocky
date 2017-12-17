@@ -15,7 +15,8 @@ class Mocky extends React.Component {
       mockUrl: '',
       sendUrl: '',
       error: '',
-      active:false
+      active:false,
+      templates:[]
     };
     this.updateConfig = this.updateConfig.bind(this);
     this.sendHAR = this.sendHAR.bind(this);
@@ -47,11 +48,19 @@ class Mocky extends React.Component {
         });
       }
     } );
+
+    this.fetchTemplateList().then((res) => {
+      this.setState({
+          templates:res
+      });
+    })
+
   }
 
   sendHAR(templateId,url) {
     let host = this.state.host;
-    return new Promise((resolve, reject) => {
+    let loadTemplates = this.fetchTemplateList;
+    new Promise((resolve, reject) => {
       chrome.devtools.network.getHAR((result) => {
         if (!result) {
           reject('error');
@@ -69,7 +78,7 @@ class Mocky extends React.Component {
             if(!response.status===201){
               reject('error');
             }
-            return response.json();
+            return jsonResponse;
           }).then((response) => {
             chrome.runtime.sendMessage({
               command: 'saveTemplate',
@@ -89,7 +98,13 @@ class Mocky extends React.Component {
           })
         }
       });
-    });
+    }).then(function(res){
+      this.fetchTemplateList().then((res) => {
+        this.setState({
+            templates:res
+        });
+      })
+    }.bind(this));
   }
 
   saveRule(event) {
@@ -185,9 +200,9 @@ class Mocky extends React.Component {
     if (this.state.host) {
       return (
         <div className={style.mockyApp}>
-                { this.state.configPresent && <MockAndRecord saveHAR={this.sendHAR} startMock={this.startMock} fetchTemplateList={this.fetchTemplateList}/>}
+                { this.state.configPresent && <MockAndRecord saveHAR={this.sendHAR} startMock={this.startMock} templates={this.state.templates}/>}
                 { !this.state.configPresent && <MockConfig saveMockConfig={this.updateConfig}/>}
-                { !this.state.configPresent && <Button text={'Edit Config'} clickHandler={()=> this.setState({ configPresent:false})}/>}
+                <Button text={'Edit Config'} clickHandler={()=> this.setState({ configPresent:false})}/>
                 <Modal header={'Ongoing Mock'} show={this.state.active}>
                     <div className={style.mockStatus}>
                       <div className={style.mockControl}>

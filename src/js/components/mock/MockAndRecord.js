@@ -35,51 +35,30 @@ class MockAndRecord extends React.Component{
 
     saveHAR(){
         this.setState({
-            error:''
+            error:'',
+            template:'',
+            url:''
         });
         console.log(this.props);
         this.props.saveHAR(
             this.state.template,
             this.state.url
-        ).then(function(res){
-            this.setState({
-                harSendCount:++this.state.harSendCount
-            });
-
-        }.bind(this)
-        ).catch(function(res){
-            this.setState({error:res});
-        }.bind(this))
+        );
     }
     render(){
         let headerPropsMock={
             header:'Mock',
-            backgroundColor:'rgb(46, 120, 206)',
-            color:"#fff"
-        }
-        let headerPropsList={
-            header:'Template List',
-            backgroundColor:'rgb(76, 150, 101)',
-            color:'#fff'
+            subheader: 'create mocking configuration templates'
         }
         return (
             <div className={Style.mockRecord}>
-                <div className={Style.mockParent}>
-                    <div className={Style.mockChild}>
-                        <Page headerProps={headerPropsList}>
-                        <List items={this.props.templates} mockHandler={this.props.startMock}/>
-                        </Page>
-                    </div>
-                    <div className={Style.mockChild}>
-                        <Page headerProps={headerPropsMock}>
-                            <Row noLabel={false} placeholder={'Template Name'} onChangeHandler={this.onTemplateChange}/>
-                            <Row noLabel={false} placeholder={'Url prefix to mock'} onChangeHandler={this.onSendUrlChange}/>
-                            <ButtonContainer align="center">
-                                <Button text="Save HAR" clickHandler={this.saveHAR}/>
-                            </ButtonContainer>
-                        </Page>
-                    </div>
-                </div>
+                <Page headerProps={headerPropsMock}>
+                    <Row noLabel={false} placeholder={'Template Name'} value={this.state.template} onChangeHandler={this.onTemplateChange} />
+                    <Row noLabel={false} placeholder={'Url prefix to mock'} value={this.state.url} onChangeHandler={this.onUrlChange} />
+                    <ButtonContainer align="flex-start">
+                        <Button text="Save HAR" clickHandler={this.saveHAR} />
+                    </ButtonContainer>
+                </Page>
             </div>
         )
     }

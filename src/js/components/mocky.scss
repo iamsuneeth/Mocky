@@ -1,20 +1,22 @@
-$mainColor:rgb(76, 150, 101);
+$mainColor:rgb(46, 120, 206);
+
+html,body{
+    height: 100%;
+    margin: 0;
+    &>div{
+        height: 100%;
+    }
+}
 
 .mockyApp{
     display: flex;
-    justify-content: space-around;
-    //max-width: 1080px;
-    margin: auto;
-    .mockStatus{
-        display: flex;
-        &>div{
-            flex:1 1 auto;
-        }
-        .mockControl{
-            padding:20px;
-            position: relative;
-            top:50%;
-        }
+    justify-content: flex-start;
+    margin: 0;
+    height: 100%;
+    
+
+    .mainPage{
+        flex: 3 1 auto;
     }
 }
 
@@ -22,20 +24,26 @@ input[type='text']{
     min-width: 240px;
     padding:5px;
     height:30px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    &:focus,&:active{
+        outline: 0;
+        border-bottom-color: rgb(46, 120, 206);
+    }
 }
 
 button {
     min-width: 100px;
     min-height: 30px;
-    background-color: #fff;
-    color: #ccc;
-    border-radius: 1px;
-    border: 1px solid #ccc;
+    background-color: rgb(46, 134, 235);
+    color: #fff;
+    font-weight: 300;
+    border-radius: 2px;
+    border: 1px solid rgb(46, 120, 206);
     margin:2px;
 }
 
 button:hover {
-    border-color: $mainColor;
-    color:$mainColor;
+    background-color:  rgb(46, 120, 206);
     cursor: pointer;
 }

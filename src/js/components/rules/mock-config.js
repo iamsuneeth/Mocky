@@ -6,11 +6,12 @@ import ButtonContainer from '../common/ButtonContainer';
 import Button from '../common/Button';
 
 class MockConfig extends React.Component{
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            mockUrl:'',
-            sendUrl:''
+            mockUrl:this.props.mockUrl?this.props.mockUrl:'',
+            sendUrl:this.props.sendUrl?this.props.sendUrl:'',
+            edit:this.props.mockUrl?false:true
         };
         this.onMockUrlChange = this.onMockUrlChange.bind(this);
         this.onSendUrlChange = this.onSendUrlChange.bind(this);
@@ -32,22 +33,28 @@ class MockConfig extends React.Component{
         this.props.saveMockConfig({
             mockUrl:this.state.mockUrl,
             sendUrl:this.state.sendUrl
-        });
+        }).then(function(){
+            this.setState({
+                edit:false
+            });
+        }.bind(this))
+        .catch(function(){
+            console.log('error');
+        })
     }
 
     render(){
         let headerProps = {
             header:'Mock Configuration',
-            backgroundColor:'rgb(76, 150, 101)',
-            color:"#fff"
+            subheader:'Configure base configurations'
         }
         return (
             <div className={style.mockConfig}>
                 <Page headerProps={headerProps}>
-                <Row noLabel={false} placeholder={'Mock URL'} onChangeHandler={this.onMockUrlChange}/>
-                <Row noLabel={false} placeholder={'Send URL'} onChangeHandler={this.onSendUrlChange}/>
-                <ButtonContainer align="flex-end">
-                    <Button text="Save Config" clickHandler={this.saveMockConfig}/>
+                <Row noLabel={false} placeholder={'Mock URL'} value={this.state.mockUrl} disabled={!this.state.edit} onChangeHandler={this.onMockUrlChange}/>
+                <Row noLabel={false} placeholder={'Send URL'} value={this.state.sendUrl} disabled={!this.state.edit} onChangeHandler={this.onSendUrlChange}/>
+                <ButtonContainer align="flex-start">
+                    {this.state.edit?<Button text="Save Config" clickHandler={this.saveMockConfig}/>:<Button text="Edit Config" clickHandler={() => this.setState({edit:true})}/>}
                 </ButtonContainer>
                 </Page>
             </div>

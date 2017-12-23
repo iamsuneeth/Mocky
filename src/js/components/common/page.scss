@@ -1,10 +1,22 @@
 .page{
-
+    color: #555;
+    padding-top:10px;
     .pageHeader{
-        padding:10px;
+        padding-left: 20px;
         h3{
             margin: 0;
         }
+        h4{
+            margin: 5px 0;
+            font-weight: 100;
+        }
+    }
+    hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #eee;
+        padding: 0;
     }
 
     .pageBody{

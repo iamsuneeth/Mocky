@@ -1,0 +1,27 @@
+.sideBar{
+    border-right: 2px solid #888;
+    background-color: #eee;
+    height: 100%;
+    width:300px;
+    ul{
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li{
+            a{
+                display: block;
+                padding: 10px;
+                padding-left: 20px;
+                cursor: pointer;
+                &:hover{
+                    background-color: #ccc;
+                }
+                &.selected{
+                    background-color: rgb(46, 120, 206);
+                    color: #fff;
+                }
+            }
+              
+        }
+    }
+}

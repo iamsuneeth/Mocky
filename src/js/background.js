@@ -41,8 +41,7 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
           chrome.tabs.get(request.tabId,function(tab){
             const url = new URL(tab.url);
             chrome.storage.local.get(url.hostname, function(result){
-              console.log(result && result[url.hostname] && result[url.hostname].config);
-              if(result && result[url.hostname] && result[url.hostname].config){
+              if(result && result[url.hostname]){
                 sendResponse(result[url.hostname].config);
               }else{
                 sendResponse(url.hostname);
@@ -53,9 +52,20 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
           })
         }else if(request.command === 'updateConfig'){
           let config = {[request.args.config.host]:{'config':request.args.config}};
-          chrome.storage.local.set(config);
+          chrome.storage.local.get(request.args.config.host,function(result){
+            let obj = request.args.config;
+            if(result[request.args.config.host]){
+              result[request.args.config.host].config = obj;
+            }else{
+              result = config;
+            }
+            chrome.storage.local.set(result);
+            sendResponse(result);
+          })
+         
         }else if(request.command === 'getTemplates'){
           chrome.storage.local.get(request.args.host, function(result){
+            console.log(result, request.args.host);
             let templates = result[request.args.host].templates;
             if(templates){
               sendResponse(templates);
@@ -83,6 +93,7 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
               templates.push(request.args);
               result[request.args.host].templates=templates;
               chrome.storage.local.set(result);
+              sendResponse('saved');
             }else{
               result[request.args.host].templates = [request.args];
               chrome.storage.local.set(result);

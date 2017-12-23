@@ -3,7 +3,7 @@ import Style from './button.scss';
 import PropTypes from 'prop-types';
 
 const Button = props => (
-    <button className='button' onClick={props.clickHandler}>{props.text}</button>
+    <button disabled={props.disabled} className='button' onClick={props.clickHandler}>{props.text}</button>
 );
 
 Button.propTypes = {

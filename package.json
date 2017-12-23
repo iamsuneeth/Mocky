@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "webpack-dev-server --content-base dist/",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "devBuild": "webpack -d"
   },
   "author": "",
   "license": "ISC",

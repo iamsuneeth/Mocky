@@ -1,4 +1,4 @@
-chrome.devtools.panels.create("My Panel",
+chrome.devtools.panels.create("Mocky",
 "",
 "panel.html",
 function(panel) {

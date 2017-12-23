@@ -1,23 +1,5 @@
+import manifest from '../../public/manifest.json';
 
-
-// chrome.webRequest.onCompleted.addListener(
-//     function(details) {
-//       console.log(details);
-//     },
-//     {urls: ["<all_urls>"],types:["xmlhttprequest"]});
-
-
-//     function interceptRequest(request) {
-//         console.log(request);
-//         return { redirectUrl: 'https://stackoverflow.com/digx/' }
-//     }
-//     chrome.webRequest.onBeforeRequest.addListener(interceptRequest, { urls: ['*://stackoverflow.com/*'] }, ['blocking']);
-
-
-/**
- * 1. create listener factory using promise to enclose templateId, mockurl and sendUrl in a closure
- * 2. change all promise to async await 
- */
 function createClosure(mockUrl,sendUrl){
 
   function mock(request){

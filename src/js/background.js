@@ -1,10 +1,10 @@
 import manifest from '../../public/manifest.json';
 
-function createClosure(mockUrl,sendUrl){
+function createClosure(mockUrl,sendUrl, template){
 
   function mock(request){
     if(request.url.startsWith(mockUrl)){
-      return {redirectUrl: sendUrl};
+      return {redirectUrl: `${sendUrl}?url=${request.url}&template=${template}`};
     }
   };
   return mock;
@@ -83,7 +83,7 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
             }
           });
         }else if(request.command === 'startMock'){
-          let mockFunction = createClosure(request.args.mockUrl,request.args.sendUrl);
+          let mockFunction = createClosure(request.args.mockUrl,request.args.sendUrl,request.args.template);
           createListener(mockFunction,request.args.mockUrl,request.args.host);
 
         }else if(request.command === 'stopMock'){

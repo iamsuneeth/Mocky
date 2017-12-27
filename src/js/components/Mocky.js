@@ -72,6 +72,7 @@ class Mocky extends React.Component {
           const payload = {
             id: templateId,
             host,
+            url,
             har: JSON.stringify(result.entries),
           };
           fetch(this.state.sendUrl, {

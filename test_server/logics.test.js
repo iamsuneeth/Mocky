@@ -1,4 +1,4 @@
-const {parseHAR, saveHAR} = require('./logics');
+const {parseHAR, saveHAR, readResponse} = require('./logics');
 const fs = require('fs-extra');
 let entries = [ {
     "startedDateTime": "2017-12-26T17:14:34.784Z",
@@ -26,7 +26,7 @@ it('parses HAR', () => {
 
 it('create directory', () => {
 
-    return saveHAR("id",[{
+    return saveHAR("template2",[{
         key:'async/something',
         host:"javascript.info",
         data:{
@@ -36,6 +36,18 @@ it('create directory', () => {
     },]).then((data) => {
         console.log(data);
         expect(data).toEqual([true]);
-        fs.remove('javascript.info',(err) => console.log(err));
     });
+});
+
+it('reads response',() => {
+    return readResponse('javascript.info','/?url=async/something&template=template2')
+            .then((data) => {
+                expect(typeof data).toBe('object');
+                expect(data).toHaveProperty('status');
+                expect(data).toHaveProperty('content');
+            })
+})
+
+afterAll(() => {
+    fs.remove('javascript.info',(err) => console.log(err));
 });

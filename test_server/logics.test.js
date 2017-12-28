@@ -1,41 +1,13 @@
-const {parseHAR, saveHAR, readResponse} = require('./logics');
+const {saveContent, readResponse} = require('./logics');
 const fs = require('fs-extra');
-let entries = [ {
-    "startedDateTime": "2017-12-26T17:14:34.784Z",
-    "time": 716.9939999991329,
-    "request": {
-      "method": "GET",
-      "url": "https://javascript.info/async/something?sd=22",
-      "httpVersion": "http/2.0",
-      "headers": []},
-    "response": {
-        "status":200,
-        "content":{
-            "text":"asdsdasdasdasdasdsaasdasdsdsdsdasd"
-        }
-    }}];
 
+it('saves content', () => {
 
-it('parses HAR', () => {
-    return parseHAR(entries,'https://javascript.info','async')
-        .then((result) => {
-            expect(result.length > 0).toBeTruthy();
-            expect(result[0]).toHaveProperty('key','async/something');
-        });
-});
-
-it('create directory', () => {
-
-    return saveHAR("template2",[{
-        key:'async/something',
-        host:"javascript.info",
-        data:{
-            status:200,
-            content:{"ssss":"wwww"}
-        }
-    },]).then((data) => {
+    return saveContent("template2",{
+        "text":"asdsdasdasdasdasdsaasdasdsdsdsdasd"
+    },'https://javascript.info/async/something?sd=22',{"status":200}).then((data) => {
         console.log(data);
-        expect(data).toEqual([true]);
+        expect(data).toEqual(true);
     });
 });
 
@@ -45,6 +17,7 @@ it('reads response',() => {
                 expect(typeof data).toBe('object');
                 expect(data).toHaveProperty('status');
                 expect(data).toHaveProperty('content');
+                console.log(data);
             })
 })
 

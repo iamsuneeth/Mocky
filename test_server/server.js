@@ -1,7 +1,7 @@
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
-const {parseHAR, saveHAR, readResponse} = require('./logics');
+const {saveContent, readResponse} = require('./logics');
 const app = express();
 
 // parse application/x-www-form-urlencoded
@@ -12,9 +12,8 @@ app.use(bodyParser.json())
 
 const requestHandler = (req,res) => {
     console.log(req.body);
-    const {id,host,url,har} = req.body;
-    parseHAR(har,host,url)
-    .then((data)=> saveHAR(id,data))
+    const {id,url,content,response} = req.body;
+    saveContent(id,content,url,response)
     .then((data) => res.send('saved'))
     .catch(error => res.send(error));
 }

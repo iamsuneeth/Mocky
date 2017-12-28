@@ -13,25 +13,32 @@ function createListener(func){
 }
 
 function removeListener(func){
-  if(chrome.devtools.network.onRequestFinished.hasListener(func)){
-    chrome.devtools.network.onRequestFinished.removeListener(func);
-  }
+  chrome.devtools.network.onRequestFinished.removeListener(func);
 }
 
 function createClosure(sendUrl, template, mockUrl){
   let payload={};
-  function mock(request){
+  async function mock(request){
     if(isAPIRequestWithURL(request.request.headers, request.request.url, mockUrl)){
-      let content = request.getContent();
+      let promise = new Promise((resolve,reject) => {
+        request.getContent(data => {
+          resolve(data);
+        });
+      });
+      let content = await promise;
       payload = {
         id: template,
         headers:request.request.headers,
         url:request.request.url,
+        response:request.response,
         content
       }
       fetch(sendUrl, {
         method: 'post',
-        body: payload,
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }).then(res => {
         if(res.status===201){
           console.log('created');
@@ -46,17 +53,19 @@ function createClosure(sendUrl, template, mockUrl){
 }
 
 function isAPIRequestWithURL(headers,url, mockUrl){
-  let host,contentType;
+  let host,contentType,request;
   let parsedUrl = new URL(url);
   headers.map((elem) => {
     if(elem.name === 'Host'){
         host = elem.value
     }else if(elem.name === 'Content-Type'){
         contentType = elem.value
+    }else if(elem.name === 'x-requested-with'){
+        request = elem.value;
     }
   });
 
-  if(contentType !== 'application/json'){
+  if(contentType !== 'application/json'&& request != 'XMLHttpRequest'){
     return false;
   }
 
@@ -123,9 +132,24 @@ class Mocky extends React.Component {
 
   }
 
-  record(templateId,url){
+  async record(templateId,url){
     let mock = createClosure(this.state.sendUrl,templateId,url);
     createListener(mock);
+    chrome.runtime.sendMessage({
+      command: 'saveTemplate',
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      args: {
+        host:this.state.host,
+        templateId,
+        url,
+      },
+    }, function(res) {
+      console.log(res);
+      let templates = await this.fetchTemplateList();
+      this.setState({ 
+        templates
+      });
+    }.bind(this));
   }
 
   stopRecord(){

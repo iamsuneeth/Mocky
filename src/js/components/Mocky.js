@@ -7,6 +7,66 @@ import Modal from './common/Modal';
 import Button from './common/Button';
 import SideBar from '../components/sidebar/SideBar';
 
+let currentFunc = null;
+function createListener(func){
+  chrome.devtools.network.onRequestFinished.addListener(func);
+}
+
+function removeListener(func){
+  if(chrome.devtools.network.onRequestFinished.hasListener(func)){
+    chrome.devtools.network.onRequestFinished.removeListener(func);
+  }
+}
+
+function createClosure(sendUrl, template, mockUrl){
+  let payload={};
+  function mock(request){
+    if(isAPIRequestWithURL(request.request.headers, request.request.url, mockUrl)){
+      let content = request.getContent();
+      payload = {
+        id: template,
+        headers:request.request.headers,
+        url:request.request.url,
+        content
+      }
+      fetch(sendUrl, {
+        method: 'post',
+        body: payload,
+      }).then(res => {
+        if(res.status===201){
+          console.log('created');
+        }
+      }).catch(err => {
+        console.log('failed');
+      })
+    }
+  };
+  currentFunc = mock;
+  return mock;
+}
+
+function isAPIRequestWithURL(headers,url, mockUrl){
+  let host,contentType;
+  let parsedUrl = new URL(url);
+  headers.map((elem) => {
+    if(elem.name === 'Host'){
+        host = elem.value
+    }else if(elem.name === 'Content-Type'){
+        contentType = elem.value
+    }
+  });
+
+  if(contentType !== 'application/json'){
+    return false;
+  }
+
+  if(!parsedUrl.pathname.startsWith(`/${mockUrl}`)){
+    return false;
+  }
+
+  return true;
+}
+
 class Mocky extends React.Component {
   constructor() {
     super();
@@ -29,6 +89,8 @@ class Mocky extends React.Component {
     this.startMock = this.startMock.bind(this);
     this.renderComponent = this.renderComponent.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.record = this.record.bind(this);
+    this.stopRecord = this.stopRecord.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +122,16 @@ class Mocky extends React.Component {
     } );
 
   }
+
+  record(templateId,url){
+    let mock = createClosure(this.state.sendUrl,templateId,url);
+    createListener(mock);
+  }
+
+  stopRecord(){
+    removeListener(currentFunc);
+  }
+
 
   sendHAR(templateId,url) {
     let host = this.state.host;
@@ -209,9 +281,8 @@ class Mocky extends React.Component {
   renderComponent(){
     switch(this.state.page){
       case 'mock':
-        return <MockAndRecord saveHAR={this.sendHAR} />;
+        return <MockAndRecord startRecord={this.record} stopRecord={this.stopRecord}/>;
       case 'config':
-
         return <MockConfig saveMockConfig={this.updateConfig} mockUrl={this.state.mockUrl} sendUrl={this.state.sendUrl} />;
       case 'template':
         return <TemplateList templates={this.state.templates} startMock={this.startMock}/>;

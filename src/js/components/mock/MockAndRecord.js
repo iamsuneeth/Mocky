@@ -14,11 +14,13 @@ class MockAndRecord extends React.Component{
             template:'',
             url:'',
             harSendCount:0,
-            error:''
+            error:'',
+            recording:false,
         };
         this.onTemplateChange = this.onTemplateChange.bind(this);
         this.onUrlChange = this.onUrlChange.bind(this);
-        this.saveHAR = this.saveHAR.bind(this);
+        this.startRecord = this.startRecord.bind(this);
+        this.stopRecord = this.stopRecord.bind(this);
     }
 
     onTemplateChange (event){
@@ -32,15 +34,22 @@ class MockAndRecord extends React.Component{
             url: event.target.value
         })
     }
-
-    saveHAR(){
+    stopRecord(){
         this.setState({
             error:'',
             template:'',
-            url:''
+            url:'',
+            recording:false
         });
-        console.log(this.props);
-        this.props.saveHAR(
+        this.props.stopRecord();
+    }
+
+    startRecord(){
+        this.setState({
+            error:'',
+            recording:true
+        });
+        this.props.startRecord(
             this.state.template,
             this.state.url
         );
@@ -53,10 +62,11 @@ class MockAndRecord extends React.Component{
         return (
             <div className={Style.mockRecord}>
                 <Page headerProps={headerPropsMock}>
-                    <Row noLabel={false} placeholder={'Template Name'} value={this.state.template} onChangeHandler={this.onTemplateChange} />
-                    <Row noLabel={false} placeholder={'Url prefix to mock'} value={this.state.url} onChangeHandler={this.onUrlChange} />
+                    <Row noLabel={false} disabled={this.state.recording} placeholder={'Template Name'} value={this.state.template} onChangeHandler={this.onTemplateChange} />
+                    <Row noLabel={false} disabled={this.state.recording} placeholder={'Url prefix to mock'} value={this.state.url} onChangeHandler={this.onUrlChange} />
                     <ButtonContainer align="flex-start">
-                        <Button text="Save HAR" clickHandler={this.saveHAR} />
+                        {this.state.recording && <Button text="Stop Recording" clickHandler={this.stopRecord} />}
+                        {!this.state.recording && <Button text="Start Recording" clickHandler={this.startRecord} />}
                     </ButtonContainer>
                 </Page>
             </div>

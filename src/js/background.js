@@ -1,10 +1,11 @@
 import manifest from '../../public/manifest.json';
 let currentFunc=null;
-function createClosure(mockUrl,sendUrl, template){
-
+function createClosure(mockUrl,url, template, host){
   function mock(request){
-    if(request.url.startsWith(mockUrl)){
-      return {redirectUrl: `${sendUrl}?url=${request.url}&template=${template}`};
+    let urlObject = new URL(request.url);
+    let parsedUrl = urlObject.pathname.substr(1);
+    if(request.type === "xmlhttprequest" && parsedUrl.startsWith(url)){
+      return {redirectUrl: `${mockUrl}?url=${request.url}&template=${template}&host=${host}`};
     }
   };
   currentFunc = mock;
@@ -13,6 +14,9 @@ function createClosure(mockUrl,sendUrl, template){
 
 
 function createListener(func,mockUrl,host){
+  if(host.indexOf(':')!== -1){
+    host = host.substring(0,host.indexOf(':'));
+  }
   chrome.webRequest.onBeforeRequest.addListener(func, { urls: [`*://${host}/*`] }, ['blocking']);
 }
 
@@ -23,11 +27,11 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
         if(request.command === 'loadBaseConfig'){
           chrome.tabs.get(request.tabId,function(tab){
             const url = new URL(tab.url);
-            chrome.storage.local.get(url.hostname, function(result){
-              if(result && result[url.hostname]){
-                sendResponse(result[url.hostname].config);
+            chrome.storage.local.get(url.host, function(result){
+              if(result && result[url.host]){
+                sendResponse(result[url.host].config);
               }else{
-                sendResponse(url.hostname);
+                sendResponse(url.host);
               }   
      
             });
@@ -84,7 +88,7 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
             }
           });
         }else if(request.command === 'startMock'){
-          let mockFunction = createClosure(request.args.mockUrl,request.args.sendUrl,request.args.template);
+          let mockFunction = createClosure(request.args.mockUrl,request.args.url,request.args.template,request.args.host);
           createListener(mockFunction,request.args.mockUrl,request.args.host);
 
         }else if(request.command === 'stopMock'){

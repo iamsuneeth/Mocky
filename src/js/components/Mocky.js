@@ -265,7 +265,7 @@ class Mocky extends React.Component {
     
   }
 
-  startMock(templateId){
+  startMock(templateId, url){
     if(this.state.mockOn){
       chrome.runtime.sendMessage({
         command: 'stopMock',
@@ -285,7 +285,7 @@ class Mocky extends React.Component {
         tabId: chrome.devtools.inspectedWindow.tabId,
         args:{
           host:this.state.host,
-          sendUrl:this.state.sendUrl,
+          url:url,
           mockUrl:this.state.mockUrl,
           template:templateId
         }

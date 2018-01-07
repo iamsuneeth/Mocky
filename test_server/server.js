@@ -10,6 +10,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    next();
+});
+
 const requestHandler = (req,res) => {
     console.log(req.body);
     const {id,url,content,response} = req.body;
@@ -19,8 +25,8 @@ const requestHandler = (req,res) => {
 }
 
 const mockHandler = (req, res) => {
-    console.log(req.headers);
-    readResponse(req.headers.host,req.url)
+    console.log(req.url);
+    readResponse(req.url)
     .then(data => {
         console.log(data);
         res.status(data.status).send(data.content);
@@ -34,5 +40,5 @@ app.get('/',mockHandler);
 
 
 
-
+console.log('listening on 9000');
 app.listen(9000);

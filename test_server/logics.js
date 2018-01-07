@@ -9,9 +9,10 @@ const {basePath} = require('./constants');
 const saveContent = (id,content,url,response) => {
     url = new URL(url);
     const host = url.hostname;
+    const port = url.port;
     const path = url.pathname;
     return new Promise((resolve, reject) => {
-        let dir = `${basePath}/${host}/${id}/${path}`
+        let dir = port?`${basePath}/${host}/${port}/${id}/${path}`:`${basePath}/${host}/${id}/${path}`
         fs.mkdirp(dir)
             .then(() => {
                 return fs_writefile(`${dir}/response.json`,JSON.stringify(createJson(content,response)));
@@ -37,11 +38,12 @@ function createJson(content,response){
     }
 }
 
-const readResponse = (host,requestUrl) => {
-    let parsedHost = host.replace(/(http:\/\/|https:\/\/)/,'');
-    let {url,id} = tokenize(requestUrl);
+const readResponse = (requestUrl) => {
+    let {url,id,host} = tokenize(requestUrl);
+    url = new URL(url);
+    let dir = url.port?`${basePath}/${url.hostname}/${url.port}/${id}/${url.pathname}`:`${basePath}/${url.host}/${id}/${url.pathname}`;
     return new Promise((resolve, reject) => {
-        fs_readfile(`${basePath}/${parsedHost}/${id}/${url}/response.json`,(err, data) => {
+        fs_readfile(`${dir}/response.json`,(err, data) => {
             if(err){
                 reject(err);
                 return;
@@ -54,18 +56,21 @@ const readResponse = (host,requestUrl) => {
 function tokenize(data){
     data = data.replace('/\?','');
     let args = data.split('&');
-    let url,id;
+    let url,id,host;
     args.map(elem => {
         let tokens = elem.split('=')
         if(tokens[0]==='url'){
             url = tokens[1].replace(/\?(.*)/,'');
         }else if(tokens[0]==='template'){
             id = tokens[1];
+        }else if(tokens[0]==='host'){
+            host = tokens[1];
         }
     });
     return {
         url,
-        id
+        id,
+        host
     }
 }
 

@@ -88,7 +88,9 @@ class Mocky extends React.Component {
       error: '',
       active:false,
       templates:[],
-      page:'mock'
+      page:'mock',
+      mockOn:false,
+      currentTemplate:''
     };
     this.updateConfig = this.updateConfig.bind(this);
     this.sendHAR = this.sendHAR.bind(this);
@@ -132,7 +134,7 @@ class Mocky extends React.Component {
 
   }
 
-  async record(templateId,url){
+  record(templateId,url){
     let mock = createClosure(this.state.sendUrl,templateId,url);
     createListener(mock);
     chrome.runtime.sendMessage({
@@ -143,7 +145,7 @@ class Mocky extends React.Component {
         templateId,
         url,
       },
-    }, function(res) {
+    }, async function(res) {
       console.log(res);
       let templates = await this.fetchTemplateList();
       this.setState({ 
@@ -264,26 +266,38 @@ class Mocky extends React.Component {
   }
 
   startMock(templateId){
-    chrome.runtime.sendMessage({
-      command: 'startMock',
-      tabId: chrome.devtools.inspectedWindow.tabId,
-      args:{
-        host:this.state.host,
-        templateId
-      }
-    })
+    if(this.state.mockOn){
+      chrome.runtime.sendMessage({
+        command: 'stopMock',
+        tabId: chrome.devtools.inspectedWindow.tabId,
+        args: {
+          host: this.state.host,
+          templateId
+        }
+      });
+      this.setState({
+        mockOn:false,
+        currentTemplate:''
+      });
+    }else{
+      chrome.runtime.sendMessage({
+        command: 'startMock',
+        tabId: chrome.devtools.inspectedWindow.tabId,
+        args:{
+          host:this.state.host,
+          sendUrl:this.state.sendUrl,
+          mockUrl:this.state.mockUrl,
+          template:templateId
+        }
+      });
+      this.setState({
+        mockOn:true,
+        currentTemplate:templateId
+      });
+    }
+    
   }
 
-  stopMock(templateId){
-    chrome.runtime.sendMessage({
-      command: 'stopMock',
-      tabId: chrome.devtools.inspectedWindow.tabId,
-      args:{
-        host:this.state.host,
-        templateId
-      }
-    })
-  }
 
   fetchTemplateList(){
     return new Promise((resolve, reject) =>{
@@ -309,7 +323,7 @@ class Mocky extends React.Component {
       case 'config':
         return <MockConfig saveMockConfig={this.updateConfig} mockUrl={this.state.mockUrl} sendUrl={this.state.sendUrl} />;
       case 'template':
-        return <TemplateList templates={this.state.templates} startMock={this.startMock}/>;
+        return <TemplateList templates={this.state.templates} startMock={this.startMock} status={this.state.mockOn} template={this.state.currentTemplate} />;
       default:
         return <MockAndRecord saveHAR={this.sendHAR} />;
     }

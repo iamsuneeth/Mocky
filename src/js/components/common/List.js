@@ -9,7 +9,7 @@ const List = props => {
         return (
             <ul className={Style.list}>
                 {props.items.length>0 && props.items.map((item,index) => (
-                    <ListItem key={index} item={item} mockHandler={props.mockHandler}/>
+                    <ListItem key={index} item={item} mockHandler={props.mockHandler} status={props.state} template={props.template} />
                 ))}
             </ul>
             );
@@ -27,7 +27,8 @@ const ListItem = props => (
             <div className={Style.body}><span className={Style.label}>{props.item.label+' : '}</span><span className={Style.content}>{props.item.content}</span></div>
             <div className={Style.footer}>{props.item.footer}</div>
             <ButtonContainer align="flex-start">
-                <Button text="Start Mocking" clickHandler={()=>props.mockHandler(props.item.templateId)}/>
+            {props.status &&  props.template===props.item.templateId &&<Button text="Stop Mocking" clickHandler={()=>props.mockHandler(props.item.templateId)}/>}
+            {!props.status && <Button text="Start Mocking" clickHandler={()=>props.mockHandler(props.item.templateId)}/>}
             </ButtonContainer>
         </div>
     </li>

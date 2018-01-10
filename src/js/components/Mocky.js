@@ -102,6 +102,7 @@ class Mocky extends React.Component {
     this.setPage = this.setPage.bind(this);
     this.record = this.record.bind(this);
     this.stopRecord = this.stopRecord.bind(this);
+    this.deleteTemplate = this.deleteTemplate.bind(this);
   }
 
   componentDidMount() {
@@ -316,7 +317,7 @@ class Mocky extends React.Component {
     }); 
   }
 
-  async deleteTemplate(template){
+  deleteTemplate(template){
     chrome.runtime.sendMessage({
       command:'deleteTemplate',
       tabId:chrome.devtools.inspectedWindow.tabId,
@@ -324,7 +325,7 @@ class Mocky extends React.Component {
         host:this.state.host,
         template
       }
-    },function(res){
+    },async function(res){
       if(res === 'deleted'){
         let payload ={
           host:this.state.host,
@@ -345,7 +346,7 @@ class Mocky extends React.Component {
           })
         };
       }
-    })
+    }.bind(this));
   }
 
   renderComponent(){
@@ -355,7 +356,7 @@ class Mocky extends React.Component {
       case 'config':
         return <MockConfig saveMockConfig={this.updateConfig} mockUrl={this.state.mockUrl} sendUrl={this.state.sendUrl} />;
       case 'template':
-        return <TemplateList templates={this.state.templates} startMock={this.startMock} status={this.state.mockOn} template={this.state.currentTemplate} delete={this.state.deleteTemplate}/>;
+        return <TemplateList templates={this.state.templates} startMock={this.startMock} status={this.state.mockOn} template={this.state.currentTemplate} deleteTemplate={this.deleteTemplate}/>;
       default:
         return <MockAndRecord saveHAR={this.sendHAR} />;
     }

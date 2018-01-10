@@ -4,6 +4,7 @@ const {URL} = require('url');
 const fs_writefile = util.promisify(fs.writeFile);
 const fs_makedir = util.promisify(fs.mkdir);
 const fs_readfile = util.promisify(fs.readFile);
+const fs_emptyDir = util.promisify(fs.emptyDir);
 const {basePath} = require('./constants');
 
 const saveContent = (id,content,url,response) => {
@@ -51,6 +52,12 @@ const readResponse = (requestUrl) => {
             resolve(JSON.parse(data));
         })
     })
+}
+
+const deletData = ({template, host, port}) => {
+    let url = new URL(host);
+    let dir = url.host?`${basePath}/${url.hostname}/${url.port}/${template}`:`${basePath}/${url.hostname}/${template}`;
+    return fs.emptyDir(dir);
 }
 
 function tokenize(data){

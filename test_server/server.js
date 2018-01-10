@@ -34,8 +34,19 @@ const mockHandler = (req, res) => {
     
 }
 
+const deletHandler = (req,res) => {
+    console.log(req.body);
+    deleteData(req.body).then(data => (
+        res.status(204).send('deleted')
+    )).catch(err => (
+        res.status(500).send(err)
+    ));
+
+}
+
 app.post('/',requestHandler);
 app.get('/',mockHandler);
+app.delete('/',deletHandler);
 
 
 

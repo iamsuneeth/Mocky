@@ -333,7 +333,7 @@ class Mocky extends React.Component {
         };
         
         let response = await fetch(this.state.sendUrl, {
-          method: 'post',
+          method: 'delete',
           body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json'

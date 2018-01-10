@@ -316,6 +316,38 @@ class Mocky extends React.Component {
     }); 
   }
 
+  async deleteTemplate(template){
+    chrome.runtime.sendMessage({
+      command:'deleteTemplate',
+      tabId:chrome.devtools.inspectedWindow.tabId,
+      args:{
+        host:this.state.host,
+        template
+      }
+    },function(res){
+      if(res === 'deleted'){
+        let payload ={
+          host:this.state.host,
+          template
+        };
+        
+        let response = await fetch(this.state.sendUrl, {
+          method: 'post',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        response = response.json();
+        if(response.status !== 204){
+          this.setState({
+            error:res.data
+          })
+        };
+      }
+    })
+  }
+
   renderComponent(){
     switch(this.state.page){
       case 'mock':
@@ -323,7 +355,7 @@ class Mocky extends React.Component {
       case 'config':
         return <MockConfig saveMockConfig={this.updateConfig} mockUrl={this.state.mockUrl} sendUrl={this.state.sendUrl} />;
       case 'template':
-        return <TemplateList templates={this.state.templates} startMock={this.startMock} status={this.state.mockOn} template={this.state.currentTemplate} />;
+        return <TemplateList templates={this.state.templates} startMock={this.startMock} status={this.state.mockOn} template={this.state.currentTemplate} delete={this.state.deleteTemplate}/>;
       default:
         return <MockAndRecord saveHAR={this.sendHAR} />;
     }

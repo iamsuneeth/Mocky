@@ -18,7 +18,7 @@ const TemplateList = props => {
     return (
     <div className={style.templates}>
         <Page headerProps={headerPropsList}>
-            <List items={items} mockHandler={props.startMock} status={props.status} template={props.template}/>
+            <List items={items} mockHandler={props.startMock} status={props.status} template={props.template} delete={props.delete}/>
         </Page>
     </div>
     )

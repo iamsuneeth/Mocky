@@ -52,7 +52,6 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
          
         }else if(request.command === 'getTemplates'){
           chrome.storage.local.get(request.args.host, function(result){
-            console.log(result, request.args.host);
             let templates = result[request.args.host].templates;
             if(templates){
               sendResponse(templates);
@@ -95,6 +94,20 @@ chrome.runtime.onMessage.addListener(function(request,sender, sendResponse){
           if(chrome.webRequest.onBeforeRequest.hasListener(currentFunc)){
             chrome.webRequest.onBeforeRequest.removeListener(currentFunc);
           }
+        }else if(request.command === 'deleteTemplate'){
+          chrome.storage.local.get(request.args.host, function(result){
+            let templates = result[request.args.host].templates;
+            if(templates){
+              let newTemplates = templates.filter(elem => {
+                return elem.templateId !== request.args.template;
+              });
+              result[request.args.host].templates = newTemplates;
+              chrome.storage.local.set(result);
+              sendResponse('deleted');
+            }else{
+              sendResponse('nothing to delete');
+            }
+          });
         }
     
         return true;

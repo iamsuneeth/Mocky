@@ -55,7 +55,7 @@ const readResponse = (requestUrl) => {;
 }
 
 const deleteData = ({template, host}) => {
-    let url = new URL(host);
+    let url = new URL(`http://${host}`);
     let dir = url.host?`${basePath}/${url.hostname}/${url.port}/${template}`:`${basePath}/${url.hostname}/${template}`;
     return fs_remove(dir);
 }

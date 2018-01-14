@@ -22,7 +22,7 @@ it('reads response',() => {
 })
 
 it('deletes directory',() => {
-    let request = {template:'template2', host:'https://javascript.info'}
+    let request = {template:'localhost2', host:'slenin-in.in.oracle.com:7777'}
     return deleteData(request).then(() => {
         expect().toBe(undefined);
     })

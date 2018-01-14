@@ -1,7 +1,7 @@
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
-const {saveContent, readResponse} = require('./logics');
+const {saveContent, readResponse, deleteData} = require('./logics');
 const app = express();
 
 // parse application/x-www-form-urlencoded

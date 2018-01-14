@@ -17,11 +17,15 @@ app.use((req,res,next)=>{
 });
 
 const requestHandler = (req,res) => {
-    console.log(req.body);
-    const {id,url,content,response} = req.body;
-    saveContent(id,content,url,response)
-    .then((data) => res.send('saved'))
-    .catch(error => res.send(error));
+    if('id' in req.body){
+        const {id,url,content,response} = req.body;
+        saveContent(id,content,url,response)
+        .then((data) => res.send('saved'))
+        .catch(error => res.send(error));
+    }else{
+        res.send('not proper data');
+    }
+    
 }
 
 const mockHandler = (req, res) => {

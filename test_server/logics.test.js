@@ -12,7 +12,7 @@ it('saves content', () => {
 });
 
 it('reads response',() => {
-    return readResponse('https://javascript.info/async/something?template=template2')
+    return readResponse('/?url=https://javascript.info/async/something&template=template2')
             .then((data) => {
                 expect(typeof data).toBe('object');
                 expect(data).toHaveProperty('status');

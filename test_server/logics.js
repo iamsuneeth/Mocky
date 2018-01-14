@@ -39,10 +39,10 @@ function createJson(content,response){
     }
 }
 
-const readResponse = (requestUrl) => {;
-    let url = new URL(requestUrl);
-    let id = url.searchParams.get('template');
-    let dir = url.port?`${basePath}/${url.hostname}/${url.port}/${id}/${url.pathname}`:`${basePath}/${url.hostname}/${id}/${url.pathname}`;
+const readResponse = (requestUrl) => {
+    let {url,id,host} = tokenize(requestUrl);
+    url = new URL(url);
+    let dir = url.port?`${basePath}/${url.hostname}/${url.port}/${id}/${url.pathname}`:`${basePath}/${url.host}/${id}/${url.pathname}`;
     return new Promise((resolve, reject) => {
         fs_readfile(`${dir}/response.json`,(err, data) => {
             if(err){
@@ -58,6 +58,27 @@ const deleteData = ({template, host}) => {
     let url = new URL(`http://${host}`);
     let dir = url.host?`${basePath}/${url.hostname}/${url.port}/${template}`:`${basePath}/${url.hostname}/${template}`;
     return fs_remove(dir);
+}
+
+function tokenize(data){
+    data = data.replace('/\?','');
+    let args = data.split('&');
+    let url,id,host;
+    args.map(elem => {
+        let tokens = elem.split('=')
+        if(tokens[0]==='url'){
+            url = tokens[1].replace(/\?(.*)/,'');
+        }else if(tokens[0]==='template'){
+            id = tokens[1];
+        }else if(tokens[0]==='host'){
+            host = tokens[1];
+        }
+    });
+    return {
+        url,
+        id,
+        host
+    }
 }
 
 module.exports = {

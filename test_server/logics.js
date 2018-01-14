@@ -4,7 +4,7 @@ const {URL} = require('url');
 const fs_writefile = util.promisify(fs.writeFile);
 const fs_makedir = util.promisify(fs.mkdir);
 const fs_readfile = util.promisify(fs.readFile);
-const fs_emptyDir = util.promisify(fs.emptyDir);
+const fs_remove = util.promisify(fs.remove);
 const {basePath} = require('./constants');
 
 const saveContent = (id,content,url,response) => {
@@ -39,10 +39,10 @@ function createJson(content,response){
     }
 }
 
-const readResponse = (requestUrl) => {
-    let {url,id,host} = tokenize(requestUrl);
-    url = new URL(url);
-    let dir = url.port?`${basePath}/${url.hostname}/${url.port}/${id}/${url.pathname}`:`${basePath}/${url.host}/${id}/${url.pathname}`;
+const readResponse = (requestUrl) => {;
+    let url = new URL(requestUrl);
+    let id = url.searchParams.get('template');
+    let dir = url.port?`${basePath}/${url.hostname}/${url.port}/${id}/${url.pathname}`:`${basePath}/${url.hostname}/${id}/${url.pathname}`;
     return new Promise((resolve, reject) => {
         fs_readfile(`${dir}/response.json`,(err, data) => {
             if(err){
@@ -54,34 +54,14 @@ const readResponse = (requestUrl) => {
     })
 }
 
-const deletData = ({template, host, port}) => {
+const deleteData = ({template, host}) => {
     let url = new URL(host);
     let dir = url.host?`${basePath}/${url.hostname}/${url.port}/${template}`:`${basePath}/${url.hostname}/${template}`;
-    return fs.emptyDir(dir);
-}
-
-function tokenize(data){
-    data = data.replace('/\?','');
-    let args = data.split('&');
-    let url,id,host;
-    args.map(elem => {
-        let tokens = elem.split('=')
-        if(tokens[0]==='url'){
-            url = tokens[1].replace(/\?(.*)/,'');
-        }else if(tokens[0]==='template'){
-            id = tokens[1];
-        }else if(tokens[0]==='host'){
-            host = tokens[1];
-        }
-    });
-    return {
-        url,
-        id,
-        host
-    }
+    return fs_remove(dir);
 }
 
 module.exports = {
     saveContent,
-    readResponse
+    readResponse,
+    deleteData
 }

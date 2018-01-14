@@ -1,4 +1,4 @@
-const {saveContent, readResponse} = require('./logics');
+const {saveContent, readResponse, deleteData} = require('./logics');
 const fs = require('fs-extra');
 
 it('saves content', () => {
@@ -12,7 +12,7 @@ it('saves content', () => {
 });
 
 it('reads response',() => {
-    return readResponse('javascript.info','/?url=async/something&template=template2')
+    return readResponse('https://javascript.info/async/something?template=template2')
             .then((data) => {
                 expect(typeof data).toBe('object');
                 expect(data).toHaveProperty('status');
@@ -21,6 +21,9 @@ it('reads response',() => {
             })
 })
 
-afterAll(() => {
-    fs.remove('javascript.info',(err) => console.log(err));
-});
+it('deletes directory',() => {
+    let request = {template:'template2', host:'https://javascript.info'}
+    return deleteData(request).then(() => {
+        expect().toBe(undefined);
+    })
+})

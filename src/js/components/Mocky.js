@@ -345,6 +345,9 @@ class Mocky extends React.Component {
             error:res.data
           })
         };
+        this.setState({
+          templates: await this.fetchTemplateList()
+        });
       }
     }.bind(this));
   }

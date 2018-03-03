@@ -43,10 +43,9 @@
     "react": "^16.1.1",
     "react-dom": "^16.1.1"
   },
-  "jest":{
-    "moduleNameMapper":{
+  "jest": {
+    "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy"
-
     }
   }
 }

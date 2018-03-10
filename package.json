@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "webpack -p",
     "dev": "webpack-dev-server --content-base dist/",
     "build": "webpack -p",
     "devBuild": "webpack -d"

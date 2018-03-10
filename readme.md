@@ -2,6 +2,8 @@
 
 Mocky is a chrome extension + simple node server to record and mock API responses. Record and mocking can be done from the devtools window of chrome witout leaving your browser, once the initial setup is ready. The tool is still in its infancy and features and bug fixes will be added as and when time permits.
 
+[![Build Status](https://travis-ci.org/iamsuneeth/Mocky.svg?branch=master)](https://travis-ci.org/iamsuneeth/Mocky)
+
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
